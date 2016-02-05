@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-class Covoiturage{
+public class Covoiturage{
 	Personne tp[];
 	Voiture tv[];
 
@@ -88,26 +88,22 @@ class Covoiturage{
 
 		while (i < this.getVilles().length && possible) {
 			String ville = this.getVilles()[i];
-			int nbConducteurs = 0;
-			for (int j = 0 ; j < this.tp.length ; j++) {
-				if (this.tp[j].permis && this.tp[j].ville == ville){
-					nbConducteurs++;
-				}
-			}
-			int nbPersonnes = nbPersonnes(ville);
+			int nbConducteurs = this.getConducteurs(ville).length;
+			int nbPersonnes = this.nbPersonnes(ville);
+			Personne[] personnes = this.getPersonnes(ville);
+			Voiture[] voitures = this.getVoitures(ville);
 			int k,capa;
 			k = 0;
 			capa = 0;
-			while (k < this.tv.length && possible) {
-				if (this.tv[k].ville == ville) {
-					capa = this.tv[k].capa;
-					if (capa < nbPersonnes) {
-						nbPersonnes -= capa;
-						nbConducteurs--;
-						k++;
-					} else {
-						possible = false;
-					}
+			while (k < voitures.length && possible) {
+				capa = voitures[k].capa;
+				System.out.println("capacité voiture " + voitures[k].id + " : " + capa);
+				if (capa < nbPersonnes) {
+					nbPersonnes -= capa;
+					nbConducteurs--;
+					k++;
+				} else {
+					possible = false;
 				}
 			}
 			possible = nbConducteurs > 0;
@@ -118,6 +114,7 @@ class Covoiturage{
 	}
 
 	public Voiture[] getVoitures(String ville) {
+		Arrays.sort(this.tv);
 		Voiture voitures[] = new Voiture[this.tv.length];
 		int j = 0;
 		for (int i = 0 ; i < this.tv.length ; i++) {
@@ -149,27 +146,142 @@ class Covoiturage{
 		return personnes2;
 	}
 
-	// public int[] Attribution() {
-	// 	Arrays.sort(this.tv);
-	// 	int[] idVoitures = new int[this.tv.length];
-	// 	for (int i = 0; i < this.tv.length ; i++) {
-	// 		for (int j = 0; j < this.tp.length; j++ ) {
-	// 			if (this.tp[j].id = i)
-	// 				idVoitures[i]
-	// 		}
-	// 	}
-	// }
+	public Personne[] getConducteurs(String ville) {
+		Personne personnes[] = new Personne[this.tp.length];
+		int j = 0;
+		for (int i = 0 ; i < this.tp.length ; i++) {
+			if (this.tp[i].ville.equals(ville) && this.tp[i].peutConduire()) {
+				personnes[j] = this.tp[i];
+				j++;
+			}
+		}
+		Personne conducteurs[] = new Personne[j];
+		for (int i = 0 ; i < j ; i++) {
+			conducteurs[i] = personnes[i];
+		}
+		return conducteurs;
+	}
+
+	public int[] attribution() {
+		int[] idPersonnes = new int[this.idPersonneMax(this.tp)+1];
+		for (int i = 0;i < this.idPersonneMax(this.tp)+1 ; i++) {
+			idPersonnes[i] = -1;
+		}
+		int i = 0;
+		while (i < this.getVilles().length) {
+			String ville = this.getVilles()[i];
+			Personne[] personnes = this.getPersonnes(ville);
+			Voiture[] voitures = this.getVoitures(ville);
+			Arrays.sort(voitures);
+			boolean[] personnesFaites = new boolean[idPersonneMax(personnes)+1];
+			int k;
+			k = 0;
+			int lastidPersonne = 0;
+			boolean possible = true;
+			while (k < voitures.length) {
+				possible = true;
+				int j = lastidPersonne;
+				while (j < personnes.length && possible) {
+					voitures[k].capa--;
+					if (!this.personneInArray(personnesFaites,personnes[j].id)) {
+						if (voitures[k].capa >= 0) {
+							idPersonnes[personnes[j].id] = voitures[k].id;
+							personnesFaites[personnes[j].id] = true;
+						} else {
+							possible = false;
+							lastidPersonne = j;
+						}
+					}
+					j++;
+				}
+				k++;
+			}
+			i++;
+		}
+
+		return idPersonnes;
+	}
+
+	public int idPersonneMax(Personne[] personnes) {
+		int max = personnes[0].id;
+		for (int i = 1; i < personnes.length ; i++) {
+			max = (personnes[i].id > max) ? personnes[i].id : max;
+		}
+		return max;
+	}
+
+	public int idPersonneMin(Personne[] personnes) {
+		int min = personnes[0].id;
+		for (int i = 1; i < personnes.length ; i++) {
+			min = (personnes[i].id < min) ? personnes[i].id : min;
+		}
+		return min;
+	}
+
+	public boolean personneInArray(boolean[] array, int monId) {
+		boolean res = false;
+		int i = 0;
+		while (i < array.length && res) {
+			res = array[monId];
+		}
+		return res;
+	}
 
 	public int getIdentifiant(String nomPersonne) {
 		int i = 0;
 		boolean trouve = false;
 		while (i < this.tp.length && !trouve) {
-			// System.out.println(i);
-			// System.out.println(nomPersonne);
-			// System.out.println(this.tp[i].nom);
 			trouve = nomPersonne.equals(this.tp[i].nom);
 			i++;
 		}
 		return trouve ? this.tp[i-1].id : -1;
 	}
+
+	public boolean testPersonnes(Personne personne1, Personne personne2) {
+		boolean res;
+		if (personne1.nom.compareTo(personne2.nom) < 0) {
+			res = true;
+		} else {
+			res = false;
+		}
+		return res;
+	}
+
+	public void triePersonnes() {
+		int i;
+		Personne tmp;
+		for (int j = 0; j < this.tp.length ; j++) {
+			i = j - 1;
+			tmp = this.tp[j];
+			while (i > -1 && testPersonnes(tmp,this.tp[i])) {
+				this.tp[i+1] = this.tp[i];
+				i -= 1;
+			}
+			this.tp[i+1] = tmp;
+		}
+	}
+
+	public int getIdentifiantDichotomique(String nomPersonne) {
+		this.triePersonnes();
+		boolean trouve = false;
+		int debut = 0;
+		int i = 0;
+		int fin = this.tp.length;
+		int milieu = 0;
+		while (!trouve && i < this.tp.length) {
+			milieu = (debut + fin)/2;
+			if (this.tp[milieu].nom.compareTo(nomPersonne) < 0) {
+				debut+=1;
+			}
+			else if (this.tp[milieu].nom.equals(nomPersonne)) {
+				trouve = true;
+			}
+			else {
+				fin-=1;
+			}
+			i+=1;
+		}
+		return this.tp[milieu].id;
+	}
+
 }
