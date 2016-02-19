@@ -28,7 +28,7 @@ public class Covoiturage{
 	}
 
 	public boolean capaciteSuffisante(String ville) {
-		Arrays.sort(this.tv);
+		this.trieVoitures();
 		int cptPlaces = 0;
 		for (int i=0;i<this.tv.length;i++) {
 			if (this.tv[i].ville.equals(ville)) {
@@ -48,7 +48,7 @@ public class Covoiturage{
 		return estDans;
 	}
 
-	public String [] getVilles() {
+	public String[] getVilles() {
 		String villes[] = new String[this.tv.length + this.tp.length];
 		int k = 0;
 		for (int i = 0; i < this.tv.length; i++) {
@@ -82,7 +82,7 @@ public class Covoiturage{
 	}
 
 	public boolean estPossible() {
-		Arrays.sort(this.tv);
+		this.trieVoitures();
 		boolean possible = true;
 		int i = 0;
 
@@ -97,7 +97,6 @@ public class Covoiturage{
 			capa = 0;
 			while (k < voitures.length && possible) {
 				capa = voitures[k].capa;
-				System.out.println("capacité voiture " + voitures[k].id + " : " + capa);
 				if (capa < nbPersonnes) {
 					nbPersonnes -= capa;
 					nbConducteurs--;
@@ -113,7 +112,7 @@ public class Covoiturage{
 		return possible && this.capaciteSuffisante();
 	}
 
-	public Voiture[] getVoitures(String ville) {
+	private Voiture[] getVoitures(String ville) {
 		Arrays.sort(this.tv);
 		Voiture voitures[] = new Voiture[this.tv.length];
 		int j = 0;
@@ -130,7 +129,7 @@ public class Covoiturage{
 		return voitures2;
 	}
 
-	public Personne[] getPersonnes(String ville) {
+	private Personne[] getPersonnes(String ville) {
 		Personne personnes[] = new Personne[this.tp.length];
 		int j = 0;
 		for (int i = 0 ; i < this.tp.length ; i++) {
@@ -146,7 +145,7 @@ public class Covoiturage{
 		return personnes2;
 	}
 
-	public Personne[] getConducteurs(String ville) {
+	private Personne[] getConducteurs(String ville) {
 		Personne personnes[] = new Personne[this.tp.length];
 		int j = 0;
 		for (int i = 0 ; i < this.tp.length ; i++) {
@@ -202,7 +201,7 @@ public class Covoiturage{
 		return idPersonnes;
 	}
 
-	public int idPersonneMax(Personne[] personnes) {
+	private int idPersonneMax(Personne[] personnes) {
 		int max = personnes[0].id;
 		for (int i = 1; i < personnes.length ; i++) {
 			max = (personnes[i].id > max) ? personnes[i].id : max;
@@ -210,15 +209,7 @@ public class Covoiturage{
 		return max;
 	}
 
-	public int idPersonneMin(Personne[] personnes) {
-		int min = personnes[0].id;
-		for (int i = 1; i < personnes.length ; i++) {
-			min = (personnes[i].id < min) ? personnes[i].id : min;
-		}
-		return min;
-	}
-
-	public boolean personneInArray(boolean[] array, int monId) {
+	private boolean personneInArray(boolean[] array, int monId) {
 		boolean res = false;
 		int i = 0;
 		while (i < array.length && res) {
@@ -235,30 +226,6 @@ public class Covoiturage{
 			i++;
 		}
 		return trouve ? this.tp[i-1].id : -1;
-	}
-
-	public boolean testPersonnes(Personne personne1, Personne personne2) {
-		boolean res;
-		if (personne1.nom.compareTo(personne2.nom) < 0) {
-			res = true;
-		} else {
-			res = false;
-		}
-		return res;
-	}
-
-	public void triePersonnes() {
-		int i;
-		Personne tmp;
-		for (int j = 0; j < this.tp.length ; j++) {
-			i = j - 1;
-			tmp = this.tp[j];
-			while (i > -1 && testPersonnes(tmp,this.tp[i])) {
-				this.tp[i+1] = this.tp[i];
-				i -= 1;
-			}
-			this.tp[i+1] = tmp;
-		}
 	}
 
 	public int getIdentifiantDichotomique(String nomPersonne) {
@@ -282,6 +249,42 @@ public class Covoiturage{
 			i+=1;
 		}
 		return this.tp[milieu].id;
+	}
+
+	private void triePersonnes() {
+		Personne [] tab = this.tp;
+		int cpt;
+	    Personne element;
+	 
+	    for (int i = 1; i < tab.length ; i++)
+	    {    
+	        element = tab[i];
+	        cpt = i - 1;
+	        while (cpt >= 0 && tab[cpt].compareTo(element) < 0)
+	        {
+	           tab[cpt + 1] = tab[cpt];
+	           cpt--;
+	        }
+	        tab[cpt + 1] = element;
+	    }
+	}
+
+	private void trieVoitures() {
+		Voiture [] tab = this.tv;
+		int cpt;
+	    Voiture element;
+	 
+	    for (int i = 1; i < tab.length ; i++)
+	    {    
+	        element = tab[i];
+	        cpt = i - 1;
+	        while (cpt >= 0 && tab[cpt].compareTo(element) < 0)
+	        {
+	           tab[cpt + 1] = tab[cpt];
+	           cpt--;
+	        }
+	        tab[cpt + 1] = element;
+	    }
 	}
 
 }

@@ -14,4 +14,8 @@ class Personne {
 	public boolean peutConduire() {
 		return this.permis;
 	}
+
+	public int compareTo(Personne pers) {
+		return pers.nom.compareTo(this.nom);
+	}
 }
