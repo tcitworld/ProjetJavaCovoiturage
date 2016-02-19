@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class Covoiturage{
 	Personne tp[];
 	Voiture tv[];
@@ -82,7 +80,6 @@ public class Covoiturage{
 	}
 
 	public boolean estPossible() {
-		this.trieVoitures();
 		boolean possible = true;
 		int i = 0;
 
@@ -113,7 +110,7 @@ public class Covoiturage{
 	}
 
 	private Voiture[] getVoitures(String ville) {
-		Arrays.sort(this.tv);
+		this.trieVoitures();
 		Voiture voitures[] = new Voiture[this.tv.length];
 		int j = 0;
 		for (int i = 0 ; i < this.tv.length ; i++) {
@@ -171,7 +168,6 @@ public class Covoiturage{
 			String ville = this.getVilles()[i];
 			Personne[] personnes = this.getPersonnes(ville);
 			Voiture[] voitures = this.getVoitures(ville);
-			Arrays.sort(voitures);
 			boolean[] personnesFaites = new boolean[idPersonneMax(personnes)+1];
 			int k;
 			k = 0;
@@ -256,34 +252,33 @@ public class Covoiturage{
 		int cpt;
 	    Personne element;
 	 
-	    for (int i = 1; i < tab.length ; i++)
+	    for (int i = 1; i < this.tp.length ; i++)
 	    {    
-	        element = tab[i];
+	        element = this.tp[i];
 	        cpt = i - 1;
-	        while (cpt >= 0 && tab[cpt].compareTo(element) < 0)
+	        while (cpt >= 0 && this.tp[cpt].compareTo(element) < 0)
 	        {
-	           tab[cpt + 1] = tab[cpt];
+	           this.tp[cpt + 1] = this.tp[cpt];
 	           cpt--;
 	        }
-	        tab[cpt + 1] = element;
+	        this.tp[cpt + 1] = element;
 	    }
 	}
 
 	private void trieVoitures() {
-		Voiture [] tab = this.tv;
 		int cpt;
 	    Voiture element;
 	 
-	    for (int i = 1; i < tab.length ; i++)
+	    for (int i = 1; i < this.tv.length ; i++)
 	    {    
-	        element = tab[i];
+	        element = this.tv[i];
 	        cpt = i - 1;
-	        while (cpt >= 0 && tab[cpt].compareTo(element) < 0)
+	        while (cpt >= 0 && this.tv[cpt].compareTo(element) > 0)
 	        {
-	           tab[cpt + 1] = tab[cpt];
+	           this.tv[cpt + 1] = this.tv[cpt];
 	           cpt--;
 	        }
-	        tab[cpt + 1] = element;
+	        this.tv[cpt + 1] = element;
 	    }
 	}
 
