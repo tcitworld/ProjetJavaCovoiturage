@@ -248,7 +248,6 @@ public class Covoiturage{
 	}
 
 	private void triePersonnes() {
-		Personne [] tab = this.tp;
 		int cpt;
 	    Personne element;
 	 
