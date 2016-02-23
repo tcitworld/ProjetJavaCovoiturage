@@ -1,3 +1,10 @@
+/**
+ * Executable exécute notre programme
+ * 
+ * @author Thomas Citharel
+ * @version 0.1
+ */
+
 public class Executable{
     public static void main(String[] args){
         Voiture v1=new Voiture(1,"Paris",4);
